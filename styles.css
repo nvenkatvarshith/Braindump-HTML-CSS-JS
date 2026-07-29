@@ -1,0 +1,21 @@
+#top-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hidden{
+    display: none;
+}
+
+.fa-sun{
+    cursor: pointer;
+}
+
+#container{
+    padding: 5px 15%;
+}
+
+#organize{
+    margin-top: 10px;
+}
