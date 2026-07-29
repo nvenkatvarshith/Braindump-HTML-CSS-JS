@@ -16,6 +16,7 @@
     }
 )()
 
+
 function getFormattedDate(currentDate){
     return `${currentDate.getDate()}-${currentDate.getMonth()+1}-${currentDate.getFullYear()} ${currentDate.getHours()}:${currentDate.getMinutes()}`;
 }
@@ -41,4 +42,81 @@ function toggleDarkTheme(theme){
 
 function organizeMyDay(){
     console.log("organization is in progress");
+    let userSchedule = document.getElementById("todo").value;
+    getAIResponse(userSchedule);
+}
+
+async function  getAIResponse(userSchedule) {
+    const apiKey = 'OPENAI-API-KEY';
+    const endpoint = 'https://api.openai.com/v1/chat/completions';
+    const systemPrompt = `You are an expert productivity assistant. Your job is to take the user's unstructured brain dump and organize it into a structured, highly actionable list of tasks.                           
+                            For each extracted task, you must:
+                            1. Define a concise, clear task title.
+                            2. Estimate the time required to complete it in minutes.
+                            3. Assess the required concentration level (Low, Medium, or High).
+                            4. Assign a priority (High for urgent/important, Medium for important but not urgent, Low for quick wins, errands, or chores).
+                            You must organize the final array so that High priority tasks appear first, followed by Medium, then Low.`;    
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: 'gpt-5.4-nano',
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userSchedule }
+                ],
+                response_format: {
+                    type: "json_schema",
+                    json_schema: {
+                        name: "organized_tasks",
+                        strict: true,
+                        schema: {
+                        type: "object",
+                        properties: {
+                            tasks: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                title: { 
+                                    type: "string" 
+                                },
+                                estimated_time_minutes: { 
+                                    type: "integer" 
+                                },
+                                concentration_level: { 
+                                    type: "string", 
+                                    enum: ["Low", "Medium", "High"] 
+                                },
+                                priority: { 
+                                    type: "string", 
+                                    enum: ["High", "Medium", "Low"] 
+                                }
+                                },
+                                required: ["title", "estimated_time_minutes", "concentration_level", "priority"],
+                                additionalProperties: false
+                            }
+                            }
+                        },
+                        required: ["tasks"],
+                        additionalProperties: false
+                        }
+                    }
+                }
+            })
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const parsedData = JSON.parse(data.choices[0].message.content);
+        console.log(parsedData.tasks);
+    }catch(error){
+        console.log(error);
+    }
 }
