@@ -43,11 +43,12 @@ function toggleDarkTheme(theme){
 function organizeMyDay(){
     console.log("organization is in progress");
     let userSchedule = document.getElementById("todo").value;
+    showLoader(true);
     getAIResponse(userSchedule);
 }
 
 async function  getAIResponse(userSchedule) {
-    const apiKey = 'OPENAI-API-KEY';
+    const apiKey = 'OPEN-API-Key';
     const endpoint = 'https://api.openai.com/v1/chat/completions';
     const systemPrompt = `You are an expert productivity assistant. Your job is to take the user's unstructured brain dump and organize it into a structured, highly actionable list of tasks.                           
                             For each extracted task, you must:
@@ -116,7 +117,30 @@ async function  getAIResponse(userSchedule) {
         const data = await response.json();
         const parsedData = JSON.parse(data.choices[0].message.content);
         console.log(parsedData.tasks);
+        let str = '';
+        parsedData.tasks.forEach(function(activity){
+            str += `
+                <div class="activity">
+                    <h4>Title: <span>${activity.title}</span></h4>
+                    <h4>Estimated Time in Minutes: <span>${activity.estimated_time_minutes}</span></h4>
+                    <h4>Concentration level: <span>${activity.concentration_level}</span></h4>
+                    <h4>Priority: <span>${activity.priority}</span></h4>
+                </div>
+            `;
+        });
+        document.getElementById("todo").value = "";
+        showLoader(false);
+        document.getElementById("activities").innerHTML = str;
     }catch(error){
         console.log(error);
+    }
+    return null;
+}
+
+function showLoader(loading){
+    if(loading){
+        document.getElementById("loader").classList.remove("hidden");
+    }else{
+        document.getElementById("loader").classList.add("hidden");
     }
 }
