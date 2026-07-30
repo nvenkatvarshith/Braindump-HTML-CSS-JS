@@ -48,7 +48,7 @@ function organizeMyDay(){
 }
 
 async function  getAIResponse(userSchedule) {
-    const apiKey = 'OPEN-API-Key';
+    const apiKey = 'OPEN-API-KEY';
     const endpoint = 'https://api.openai.com/v1/chat/completions';
     const systemPrompt = `You are an expert productivity assistant. Your job is to take the user's unstructured brain dump and organize it into a structured, highly actionable list of tasks.                           
                             For each extracted task, you must:
@@ -117,19 +117,34 @@ async function  getAIResponse(userSchedule) {
         const data = await response.json();
         const parsedData = JSON.parse(data.choices[0].message.content);
         console.log(parsedData.tasks);
-        let str = '';
+        let highActivity = '';
+        let mediumActivity = '';
+        let lowActivity = '';
         parsedData.tasks.forEach(function(activity){
-            str += `
-                <div class="activity">
-                    <h4>Title: <span>${activity.title}</span></h4>
-                    <h4>Estimated Time in Minutes: <span>${activity.estimated_time_minutes}</span></h4>
-                    <h4>Concentration level: <span>${activity.concentration_level}</span></h4>
-                    <h4>Priority: <span>${activity.priority}</span></h4>
-                </div>
-            `;
+            if(activity.priority == 'High'){
+                highActivity += getCard(activity);
+            }else if(activity.priority == 'Medium'){
+                mediumActivity += getCard(activity);
+            }else{
+                lowActivity += getCard(activity);
+            }
         });
         document.getElementById("todo").value = "";
         showLoader(false);
+        const str = `
+            <div id="activity-high">
+                <h3>🔴 High Priority / Do Today</h3>
+                ${highActivity}
+            </div>
+            <div id="activity-medium">
+                <h3>🟡 Medium / Schedule</h3>
+                ${mediumActivity}
+            </div>
+            <div id="activity-low">
+                <h3>🟢 Low / Quick Wins</h3>
+                ${lowActivity}
+            </div>
+        `;
         document.getElementById("activities").innerHTML = str;
     }catch(error){
         console.log(error);
@@ -143,4 +158,15 @@ function showLoader(loading){
     }else{
         document.getElementById("loader").classList.add("hidden");
     }
+}
+
+function getCard(activity){
+    return `
+            <div class="activity">
+                <h4>Title: <span>${activity.title}</span></h4>
+                <h4>Estimated Time in Minutes: <span>${activity.estimated_time_minutes}</span></h4>
+                <h4>Concentration level: <span>${activity.concentration_level}</span></h4>
+                <h4>Priority: <span>${activity.priority}</span></h4>
+            </div>
+        `;
 }

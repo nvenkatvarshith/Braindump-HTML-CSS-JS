@@ -20,23 +20,21 @@
             <span><i class="fa-solid fa-sun hidden" onclick="toggleDarkTheme('light')" id="light"></i><i class="fa-regular fa-sun" onclick="toggleDarkTheme('dark')" id="dark"></i></i></span>
         </div>
         <h2><span id="timeofday"></span></h2>
-        <div id="organizeday">
-            <div id="userinput">
-                <form>
-                    <div>
-                        <textarea name="todo" id="todo" cols="80" rows="10" placeholder="What's on your mind today? e.g., I need to buy groceries, finish the Q3 report by 3 PM, call mom, and fix the leaky sink..."></textarea>
-                    </div>
-                </form>
-                <button onclick="organizeMyDay()" id="organize">Organize My Day ✨</button>
-                <div class="hidden" id="loader">
-                    <div class="loader"></div>
-                    <h4>AI is working to get the best possible organized schedule for your day</h4>
+        <div id="userinput">
+            <form>
+                <div>
+                    <textarea name="todo" id="todo" cols="80" rows="10" placeholder="What's on your mind today? e.g., I need to buy groceries, finish the Q3 report by 3 PM, call mom, and fix the leaky sink..."></textarea>
                 </div>
-            </div>
-            <div id="activities">
-                
+            </form>
+            <button onclick="organizeMyDay()" id="organize">Organize My Day ✨</button>
+            <div class="hidden" id="loader">
+                <div class="loader"></div>
+                <h4>AI is working to get the best possible organized schedule for your day</h4>
             </div>
         </div>
+    </div>
+    <div id="activities">
+        
     </div>
     <script src="./index.js"></script>
 </body>
