@@ -47,3 +47,11 @@ Building this project reinforced several core frontend and API integration conce
 
 ---
 *Built as a daily productivity tool and frontend learning project.*
+
+Screenshots
+<img width="1919" height="870" alt="Screenshot 2026-07-30 163714" src="https://github.com/user-attachments/assets/76569dc5-4db3-4600-8561-0d9ee809e3e3" />
+<img width="1919" height="900" alt="Screenshot 2026-07-30 163722" src="https://github.com/user-attachments/assets/0827944f-a4dd-4fe8-bdb4-7df43fa5678b" />
+<img width="1919" height="561" alt="Screenshot 2026-07-30 163741" src="https://github.com/user-attachments/assets/bb58f7fe-41cf-4b44-a11e-16d0e1631f03" />
+<img width="1760" height="480" alt="Screenshot 2026-07-30 164620" src="https://github.com/user-attachments/assets/3237ccc0-57ea-4c4d-9a09-f60e5dd78cb4" />
+
+
