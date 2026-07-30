@@ -1,3 +1,4 @@
+let todayTasks = null;
 (
     function loadPage(){
         let currentDate = new Date();
@@ -13,10 +14,7 @@
             grettingTime.innerHTML = "Good Morning! " + grettingMsg;
         }
         document.getElementById("current-date").innerHTML = getFormattedDate(currentDate);
-        let todayTasks = localStorage.getItem("aiResponse");
-        if(todayTasks != null){
-            showCards(JSON.parse(todayTasks));
-        }
+        showTasks();
     }
 )()
 
@@ -59,7 +57,7 @@ function organizeMyDay(){
 }
 
 async function  getAIResponse(userSchedule) {
-    const apiKey = 'OPEN-API-KEY';
+    const apiKey = 'OPEN-AP-KEY';
     const endpoint = 'https://api.openai.com/v1/chat/completions';
     const systemPrompt = `You are an expert productivity assistant. Your job is to take the user's unstructured brain dump and organize it into a structured, highly actionable list of tasks.                           
                             For each extracted task, you must:
@@ -127,9 +125,13 @@ async function  getAIResponse(userSchedule) {
 
         const data = await response.json();
         const parsedData = JSON.parse(data.choices[0].message.content);
-        console.log(parsedData.tasks);
-        localStorage.setItem("aiResponse",JSON.stringify(parsedData.tasks));
-        showCards(parsedData.tasks);
+        const aiResponse1 = parsedData.tasks.map(function(task,index) {
+            task.isCompleted = false;
+            task.id = index;
+            return task;
+        });
+        localStorage.setItem("aiResponse",JSON.stringify(aiResponse1));
+        showTasks();
         
     }catch(error){
         console.log(error);
@@ -147,11 +149,12 @@ function showLoader(loading){
 
 function getCard(activity){
     return `
-            <div class="activity">
+            <div class="activity" id='task${activity.id}'>
                 <h4>Title: <span>${activity.title}</span></h4>
                 <h4>Estimated Time in Minutes: <span>${activity.estimated_time_minutes}</span></h4>
                 <h4>Concentration level: <span>${activity.concentration_level}</span></h4>
                 <h4>Priority: <span>${activity.priority}</span></h4>
+                ${activity.isCompleted?`<span>Completed</span>`:`<button class="organize" onclick = "completeTask('${activity.id}')">Completed</button>`}
             </div>
         `;
 }
@@ -191,4 +194,25 @@ function showCards(activities){
 function clearResponse(){
     localStorage.removeItem("aiResponse");
     window.location.href= "/";
+}
+
+function completeTask(id){
+    if(todayTasks != null){
+        tasksJson = JSON.parse(todayTasks);
+        tasksJson.forEach((task) => {
+            if(task.id == id){
+                task.isCompleted = true;
+                document.getElementById("task"+id).classList.add("completed");
+            }
+        });
+        localStorage.setItem("aiResponse", JSON.stringify(tasksJson));
+        window.location.href = "/";
+    }
+}
+
+function showTasks(){
+    todayTasks = localStorage.getItem("aiResponse");
+    if(todayTasks != null){
+        showCards(JSON.parse(todayTasks));
+    }
 }
