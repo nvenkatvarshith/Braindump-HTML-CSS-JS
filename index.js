@@ -16,6 +16,13 @@
     }
 )()
 
+const textarea = document.getElementById('todo');
+
+textarea.addEventListener('input', function () {
+  this.style.height = 'auto';
+  this.style.height = `${this.scrollHeight}px`;
+});
+
 
 function getFormattedDate(currentDate){
     return `${currentDate.getDate()}-${currentDate.getMonth()+1}-${currentDate.getFullYear()} ${currentDate.getHours()}:${currentDate.getMinutes()}`;
@@ -48,7 +55,7 @@ function organizeMyDay(){
 }
 
 async function  getAIResponse(userSchedule) {
-    const apiKey = 'OPEN-API-KEY';
+    const apiKey = 'OPEN-API-AI';
     const endpoint = 'https://api.openai.com/v1/chat/completions';
     const systemPrompt = `You are an expert productivity assistant. Your job is to take the user's unstructured brain dump and organize it into a structured, highly actionable list of tasks.                           
                             For each extracted task, you must:
