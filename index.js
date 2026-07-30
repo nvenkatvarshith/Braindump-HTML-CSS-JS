@@ -12,7 +12,11 @@
         }else{
             grettingTime.innerHTML = "Good Morning! " + grettingMsg;
         }
-        document.getElementById("current-date").innerHTML = getFormattedDate(currentDate)
+        document.getElementById("current-date").innerHTML = getFormattedDate(currentDate);
+        let todayTasks = localStorage.getItem("aiResponse");
+        if(todayTasks != null){
+            showCards(JSON.parse(todayTasks));
+        }
     }
 )()
 
@@ -55,7 +59,7 @@ function organizeMyDay(){
 }
 
 async function  getAIResponse(userSchedule) {
-    const apiKey = 'OPEN-API-AI';
+    const apiKey = 'OPEN-API-KEY';
     const endpoint = 'https://api.openai.com/v1/chat/completions';
     const systemPrompt = `You are an expert productivity assistant. Your job is to take the user's unstructured brain dump and organize it into a structured, highly actionable list of tasks.                           
                             For each extracted task, you must:
@@ -124,10 +128,39 @@ async function  getAIResponse(userSchedule) {
         const data = await response.json();
         const parsedData = JSON.parse(data.choices[0].message.content);
         console.log(parsedData.tasks);
-        let highActivity = '';
+        localStorage.setItem("aiResponse",JSON.stringify(parsedData.tasks));
+        showCards(parsedData.tasks);
+        
+    }catch(error){
+        console.log(error);
+    }
+    return null;
+}
+
+function showLoader(loading){
+    if(loading){
+        document.getElementById("loader").classList.remove("hidden");
+    }else{
+        document.getElementById("loader").classList.add("hidden");
+    }
+}
+
+function getCard(activity){
+    return `
+            <div class="activity">
+                <h4>Title: <span>${activity.title}</span></h4>
+                <h4>Estimated Time in Minutes: <span>${activity.estimated_time_minutes}</span></h4>
+                <h4>Concentration level: <span>${activity.concentration_level}</span></h4>
+                <h4>Priority: <span>${activity.priority}</span></h4>
+            </div>
+        `;
+}
+
+function showCards(activities){
+    let highActivity = '';
         let mediumActivity = '';
         let lowActivity = '';
-        parsedData.tasks.forEach(function(activity){
+        activities.forEach(function(activity){
             if(activity.priority == 'High'){
                 highActivity += getCard(activity);
             }else if(activity.priority == 'Medium'){
@@ -153,27 +186,9 @@ async function  getAIResponse(userSchedule) {
             </div>
         `;
         document.getElementById("activities").innerHTML = str;
-    }catch(error){
-        console.log(error);
-    }
-    return null;
 }
 
-function showLoader(loading){
-    if(loading){
-        document.getElementById("loader").classList.remove("hidden");
-    }else{
-        document.getElementById("loader").classList.add("hidden");
-    }
-}
-
-function getCard(activity){
-    return `
-            <div class="activity">
-                <h4>Title: <span>${activity.title}</span></h4>
-                <h4>Estimated Time in Minutes: <span>${activity.estimated_time_minutes}</span></h4>
-                <h4>Concentration level: <span>${activity.concentration_level}</span></h4>
-                <h4>Priority: <span>${activity.priority}</span></h4>
-            </div>
-        `;
+function clearResponse(){
+    localStorage.removeItem("aiResponse");
+    window.location.href= "/";
 }
