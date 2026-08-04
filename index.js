@@ -57,7 +57,7 @@ function organizeMyDay(){
 }
 
 async function  getAIResponse(userSchedule) {
-    const apiKey = 'OPEN-AP-KEY';
+    const apiKey = 'OPEN-API-KEY';
     const endpoint = 'https://api.openai.com/v1/chat/completions';
     const systemPrompt = `You are an expert productivity assistant. Your job is to take the user's unstructured brain dump and organize it into a structured, highly actionable list of tasks.                           
                             For each extracted task, you must:
@@ -120,7 +120,10 @@ async function  getAIResponse(userSchedule) {
             })
         });
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorData = await response.json();
+            const exactErrorMessage = errorData.error?.message || "Unknown API error occurred";
+            showLoader(false);
+            throw new Error(`${response.status}: ${exactErrorMessage}`);
         }
 
         const data = await response.json();
@@ -134,6 +137,7 @@ async function  getAIResponse(userSchedule) {
         showTasks();
         
     }catch(error){
+        document.getElementById("errormsg").innerHTML += `<h3>${error}</h3>`;
         console.log(error);
     }
     return null;
